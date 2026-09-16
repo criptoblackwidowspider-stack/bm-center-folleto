@@ -1,0 +1,567 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BM Center — Cotizador de Servicios</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg: #16181B;
+    --bg-panel: #1E2125;
+    --bg-panel-raised: #24282D;
+    --border: #34383E;
+    --text: #ECEBE6;
+    --text-muted: #9BA0A6;
+    --accent: #E8A93A;
+    --accent-ink: #1A1305;
+    --brake: #C0453A;
+    --ok: #6FA97A;
+    --radius: 4px;
+    font-size: 16px;
+  }
+
+  * { box-sizing: border-box; }
+
+  html, body {
+    margin: 0;
+    padding: 0;
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Inter', -apple-system, 'Segoe UI', sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  h1, h2, h3, .display {
+    font-family: 'Barlow Condensed', 'Inter', sans-serif;
+    font-weight: 700;
+    letter-spacing: 0.01em;
+    margin: 0;
+  }
+
+  button { font-family: inherit; }
+
+  a { color: var(--accent); }
+
+  /* ---------- Layout shell ---------- */
+
+  .wrap {
+    max-width: 1080px;
+    margin: 0 auto;
+    padding: 28px 20px 120px;
+  }
+
+  header.top {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 16px;
+    padding-bottom: 22px;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 26px;
+    flex-wrap: wrap;
+  }
+
+  header.top .brand {
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+  }
+
+  header.top h1 {
+    font-size: 2rem;
+    color: var(--text);
+  }
+
+  header.top .brand-mark {
+    color: var(--accent);
+  }
+
+  header.top .sub {
+    color: var(--text-muted);
+    font-size: 0.95rem;
+    max-width: 40ch;
+  }
+
+  .layout {
+    display: grid;
+    grid-template-columns: 1fr;
+    grid-template-areas:
+      "vehicle"
+      "summary"
+      "services";
+    gap: 22px;
+  }
+
+  @media (min-width: 860px) {
+    .layout {
+      grid-template-columns: 1fr 320px;
+      grid-template-areas:
+        "vehicle  summary"
+        "services summary";
+      align-items: start;
+    }
+  }
+
+  /* ---------- Vehicle selector ---------- */
+
+  .vehicle-select {
+    grid-area: vehicle;
+  }
+
+  .vehicle-select .label {
+    color: var(--text-muted);
+    font-size: 0.82rem;
+    text-transform: none;
+    margin-bottom: 10px;
+    display: block;
+  }
+
+  .seg {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+  }
+
+  .seg button {
+    background: var(--bg-panel);
+    border: 1px solid var(--border);
+    color: var(--text-muted);
+    border-radius: var(--radius);
+    padding: 12px 10px;
+    font-size: 0.95rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: border-color 0.15s ease, color 0.15s ease, background 0.15s ease;
+  }
+
+  .seg button:hover { border-color: #4A4F56; color: var(--text); }
+
+  .seg button.active {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: var(--accent-ink);
+  }
+
+  /* ---------- Services list ---------- */
+
+  .services { grid-area: services; }
+
+  .category {
+    margin-bottom: 22px;
+  }
+
+  .category h2 {
+    font-size: 1.35rem;
+    color: var(--text);
+    margin-bottom: 10px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .service-row {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 12px 10px;
+    border-radius: var(--radius);
+    cursor: pointer;
+    border: 1px solid transparent;
+  }
+
+  .service-row:hover { background: var(--bg-panel); }
+
+  .service-row.checked {
+    background: var(--bg-panel);
+    border-color: var(--border);
+  }
+
+  .service-row input[type="checkbox"] {
+    width: 19px;
+    height: 19px;
+    accent-color: var(--accent);
+    flex-shrink: 0;
+    cursor: pointer;
+  }
+
+  .service-row input[type="checkbox"]:disabled {
+    cursor: not-allowed;
+    opacity: 0.4;
+  }
+
+  .stepper {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-shrink: 0;
+  }
+
+  .stepper button {
+    width: 26px;
+    height: 26px;
+    border-radius: var(--radius);
+    border: 1px solid var(--border);
+    background: var(--bg-panel-raised);
+    color: var(--text);
+    font-size: 1rem;
+    line-height: 1;
+    cursor: pointer;
+  }
+
+  .stepper button:hover { border-color: var(--accent); }
+
+  .stepper .qty {
+    min-width: 1.2em;
+    text-align: center;
+    font-variant-numeric: tabular-nums;
+    font-size: 0.9rem;
+    color: var(--text);
+  }
+
+  .service-row .info {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .service-row .name {
+    font-size: 1rem;
+    font-weight: 500;
+    color: var(--text);
+  }
+
+  .service-row .meta {
+    font-size: 0.82rem;
+    color: var(--text-muted);
+    margin-top: 2px;
+  }
+
+  .service-row .price {
+    font-variant-numeric: tabular-nums;
+    font-weight: 600;
+    color: var(--text);
+    white-space: nowrap;
+  }
+
+  /* ---------- Summary panel ---------- */
+
+  .summary {
+    grid-area: summary;
+    background: var(--bg-panel);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 20px;
+  }
+
+  @media (min-width: 860px) {
+    .summary { position: sticky; top: 20px; }
+  }
+
+  .summary h2 {
+    font-size: 1.1rem;
+    color: var(--text-muted);
+    font-family: 'Inter', sans-serif;
+    font-weight: 600;
+    margin-bottom: 4px;
+  }
+
+  .summary .count {
+    color: var(--text-muted);
+    font-size: 0.85rem;
+    margin-bottom: 16px;
+  }
+
+  .total-card {
+    background: var(--bg-panel-raised);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 14px;
+    margin-bottom: 10px;
+  }
+
+  .total-card .t-label {
+    font-size: 0.82rem;
+    color: var(--text-muted);
+    margin-bottom: 4px;
+  }
+
+  .total-card .t-value {
+    font-size: 1.6rem;
+    font-variant-numeric: tabular-nums;
+    color: var(--text);
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 700;
+  }
+
+  .total-card .t-note {
+    font-size: 0.76rem;
+    color: var(--text-muted);
+    margin-top: 3px;
+  }
+
+  .total-card.efectivo .t-value { color: var(--ok); }
+  .total-card.tarjeta .t-value { color: var(--brake); }
+  .total-card.iva .t-value { color: var(--accent); }
+
+  .empty-note {
+    color: var(--text-muted);
+    font-size: 0.88rem;
+    padding: 6px 0 2px;
+  }
+
+  footer {
+    max-width: 1080px;
+    margin: 40px auto 0;
+    padding: 20px;
+    border-top: 1px solid var(--border);
+    color: var(--text-muted);
+    font-size: 0.8rem;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    * { transition: none !important; }
+  }
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <header class="top">
+    <div class="brand">
+      <h1><span class="brand-mark">BM</span> Center</h1>
+    </div>
+    <div class="sub">Elige el vehículo y los servicios — calculamos el total en efectivo/transferencia, con IVA y con tarjeta de crédito.</div>
+  </header>
+
+  <div class="layout">
+
+    <div class="vehicle-select">
+      <span class="label">Tipo de vehículo</span>
+      <div class="seg" id="vehicleSeg">
+        <button data-v="liviano" class="active">Liviano</button>
+        <button data-v="camioneta">Camioneta</button>
+        <button data-v="4x4">4x4</button>
+      </div>
+    </div>
+
+    <div class="services" id="services"></div>
+
+    <aside class="summary">
+      <h2>Resumen</h2>
+      <div class="count" id="countLabel">0 servicios seleccionados</div>
+      <div id="totalsBlock">
+        <div class="empty-note">Selecciona al menos un servicio para ver el total.</div>
+      </div>
+    </aside>
+
+  </div>
+</div>
+
+<footer>
+  Precios de referencia — sujetos a revisión en taller según diagnóstico del vehículo. IVA 15%. Recargo por pago con tarjeta de crédito (Datafast) 8%, aplicado sobre el subtotal con IVA.
+</footer>
+
+<script>
+  // ---------- Catálogo (datos de ejemplo — reemplazar con el catálogo real) ----------
+  const IVA = 0.15;
+  const RECARGO_DATAFAST = 0.08;
+
+  const MULTIPLIER = { liviano: 1.0, camioneta: 1.2, '4x4': 1.4 };
+  const VEHICLE_LABEL = { liviano: 'Liviano', camioneta: 'Camioneta', '4x4': '4x4' };
+
+  const SERVICIOS = [
+    { id: 1,  categoria: 'Frenos',                nombre: 'Cambio de pastillas delanteras',   mano_obra: 15,  repuesto: 35, tiempo: 1 },
+    { id: 2,  categoria: 'Frenos',                nombre: 'Cambio de discos de freno',        mano_obra: 5,   repuesto: 0,  tiempo: 0.5, unidad: 'lado', cantidad_default: 2, cantidad_max: 4, nota: 'Amparado en el ABC de Frenos' },
+    { id: 3,  categoria: 'Frenos',                nombre: 'Purga de sistema de frenos',       mano_obra: 12,  repuesto: 8,  tiempo: 0.5 },
+    { id: 4,  categoria: 'Embrague',              nombre: 'Cambio de kit de embrague',        mano_obra: 80,  repuesto: 150, tiempo: 4 },
+    { id: 5,  categoria: 'Embrague',              nombre: 'Ajuste de embrague',                mano_obra: 20,  repuesto: 0,  tiempo: 1 },
+    { id: 6,  categoria: 'Motor',                 nombre: 'Cambio de aceite y filtro',         mano_obra: 10,  repuesto: 30, tiempo: 0.5 },
+    { id: 7,  categoria: 'Motor',                 nombre: 'Cambio de banda de distribución',   mano_obra: 180, repuesto: 0,  tiempo: 5 },
+    { id: 8,  categoria: 'Motor',                 nombre: 'Afinamiento de motor',               mano_obra: 35,  repuesto: 45, tiempo: 2 },
+    { id: 13, categoria: 'Motor',                 nombre: 'Cambio de bujías (juego)',          mano_obra: 0,   repuesto: 45, tiempo: 1 },
+    { id: 14, categoria: 'Motor',                 nombre: 'Limpieza de inyectores',            mano_obra: 0,   repuesto: 45, tiempo: 1 },
+    { id: 9,  categoria: 'Suspensión',            nombre: 'Cambio de amortiguadores (par)',    mano_obra: 40,  repuesto: 140, tiempo: 2 },
+    { id: 10, categoria: 'Suspensión',            nombre: 'Cambio de rótulas',                 mano_obra: 25,  repuesto: 60, tiempo: 1.5 },
+    { id: 15, categoria: 'Alineación y Balanceo', nombre: 'Alineación 3D',                     mano_obra: 15,  repuesto: 0,  tiempo: 0.5 },
+    { id: 16, categoria: 'Alineación y Balanceo', nombre: 'Balanceo computarizado',            mano_obra: 15,  repuesto: 0,  tiempo: 0.3, unidad: 'rueda', cantidad_default: 4, cantidad_max: 4 },
+    { id: 11, categoria: 'Eléctrico',             nombre: 'Cambio de batería',                 mano_obra: 10,  repuesto: 0,  tiempo: 0.3 },
+    { id: 12, categoria: 'Eléctrico',             nombre: 'Diagnóstico eléctrico',              mano_obra: 20,  repuesto: 0,  tiempo: 1 },
+  ];
+
+  // ---------- Estado ----------
+  let vehiculo = 'liviano';
+  const seleccionados = new Map(); // id -> cantidad
+
+  // ---------- Utilidades ----------
+  function money(n) {
+    return '$' + n.toLocaleString('es-EC', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  }
+
+  function precioUnitario(s) {
+    const mult = MULTIPLIER[vehiculo];
+    return (s.mano_obra + s.repuesto) * mult;
+  }
+
+  function precioServicio(s) {
+    const cantidad = seleccionados.get(s.id) || (s.unidad ? s.cantidad_default : 1);
+    return precioUnitario(s) * cantidad;
+  }
+
+  // ---------- Render de servicios ----------
+  function renderServicios() {
+    const cont = document.getElementById('services');
+    cont.innerHTML = '';
+
+    const categorias = [...new Set(SERVICIOS.map(s => s.categoria))];
+
+    categorias.forEach(cat => {
+      const block = document.createElement('div');
+      block.className = 'category';
+
+      const h2 = document.createElement('h2');
+      h2.textContent = cat;
+      block.appendChild(h2);
+
+      SERVICIOS.filter(s => s.categoria === cat).forEach(s => {
+        const checked = seleccionados.has(s.id);
+        const row = document.createElement('div');
+        row.className = 'service-row' + (checked ? ' checked' : '');
+
+        const cb = document.createElement('input');
+        cb.type = 'checkbox';
+        cb.checked = checked;
+        cb.disabled = !!s.precio_pendiente;
+        cb.addEventListener('change', () => {
+          if (cb.checked) seleccionados.set(s.id, s.unidad ? s.cantidad_default : 1);
+          else seleccionados.delete(s.id);
+          renderServicios();
+          renderResumen();
+        });
+
+        const cbLabel = document.createElement('label');
+        cbLabel.style.display = 'contents';
+        cbLabel.appendChild(cb);
+
+        const info = document.createElement('div');
+        info.className = 'info';
+        const name = document.createElement('div');
+        name.className = 'name';
+        name.textContent = s.nombre;
+        const meta = document.createElement('div');
+        meta.className = 'meta';
+        let metaText = 'Tiempo estimado: ' + s.tiempo + ' h';
+        if (s.unidad) metaText += ' · ' + money(precioUnitario(s)) + ' por ' + s.unidad;
+        if (s.nota) metaText += ' · ' + s.nota;
+        if (s.precio_pendiente) metaText = 'Precio por confirmar';
+        meta.textContent = metaText;
+        info.appendChild(name);
+        info.appendChild(meta);
+
+        row.appendChild(cbLabel);
+        row.appendChild(info);
+
+        if (s.unidad && checked) {
+          const cantidad = seleccionados.get(s.id);
+          const stepper = document.createElement('div');
+          stepper.className = 'stepper';
+
+          const minus = document.createElement('button');
+          minus.type = 'button';
+          minus.textContent = '−';
+          minus.addEventListener('click', (e) => {
+            e.preventDefault();
+            const nueva = Math.max(1, seleccionados.get(s.id) - 1);
+            seleccionados.set(s.id, nueva);
+            renderServicios();
+            renderResumen();
+          });
+
+          const qty = document.createElement('span');
+          qty.className = 'qty';
+          qty.textContent = cantidad;
+
+          const plus = document.createElement('button');
+          plus.type = 'button';
+          plus.textContent = '+';
+          plus.addEventListener('click', (e) => {
+            e.preventDefault();
+            const nueva = Math.min(s.cantidad_max, seleccionados.get(s.id) + 1);
+            seleccionados.set(s.id, nueva);
+            renderServicios();
+            renderResumen();
+          });
+
+          stepper.appendChild(minus);
+          stepper.appendChild(qty);
+          stepper.appendChild(plus);
+          row.appendChild(stepper);
+        }
+
+        const price = document.createElement('div');
+        price.className = 'price';
+        price.textContent = s.precio_pendiente ? '—' : money(precioServicio(s));
+
+        row.appendChild(price);
+        block.appendChild(row);
+      });
+
+      cont.appendChild(block);
+    });
+  }
+
+  // ---------- Render de resumen ----------
+  function renderResumen() {
+    const countLabel = document.getElementById('countLabel');
+    const block = document.getElementById('totalsBlock');
+
+    countLabel.textContent = seleccionados.size + (seleccionados.size === 1 ? ' servicio seleccionado' : ' servicios seleccionados') + ' · ' + VEHICLE_LABEL[vehiculo];
+
+    if (seleccionados.size === 0) {
+      block.innerHTML = '<div class="empty-note">Selecciona al menos un servicio para ver el total.</div>';
+      return;
+    }
+
+    const subtotal = SERVICIOS
+      .filter(s => seleccionados.has(s.id))
+      .reduce((acc, s) => acc + precioServicio(s), 0);
+
+    const conIva = subtotal * (1 + IVA);
+    const tarjeta = conIva * (1 + RECARGO_DATAFAST);
+
+    block.innerHTML = `
+      <div class="total-card efectivo">
+        <div class="t-label">Efectivo / Transferencia</div>
+        <div class="t-value">${money(subtotal)}</div>
+        <div class="t-note">Total neto, sin IVA</div>
+      </div>
+      <div class="total-card iva">
+        <div class="t-label">Con factura (IVA 15%)</div>
+        <div class="t-value">${money(conIva)}</div>
+        <div class="t-note">Subtotal + IVA</div>
+      </div>
+      <div class="total-card tarjeta">
+        <div class="t-label">Tarjeta de crédito</div>
+        <div class="t-value">${money(tarjeta)}</div>
+        <div class="t-note">Subtotal + IVA + recargo Datafast 8%</div>
+      </div>
+    `;
+  }
+
+  // ---------- Selector de vehículo ----------
+  document.getElementById('vehicleSeg').addEventListener('click', (e) => {
+    const btn = e.target.closest('button');
+    if (!btn) return;
+    vehiculo = btn.dataset.v;
+    document.querySelectorAll('#vehicleSeg button').forEach(b => b.classList.toggle('active', b === btn));
+    renderServicios();
+    renderResumen();
+  });
+
+  // ---------- Init ----------
+  renderServicios();
+  renderResumen();
+</script>
+
+</body>
+</html>
