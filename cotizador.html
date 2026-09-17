@@ -45,8 +45,6 @@
 
   a { color: var(--accent); }
 
-  /* ---------- Layout shell ---------- */
-
   .wrap {
     max-width: 1080px;
     margin: 0 auto;
@@ -105,8 +103,6 @@
     }
   }
 
-  /* ---------- Vehicle selector ---------- */
-
   .vehicle-select {
     grid-area: vehicle;
   }
@@ -144,8 +140,6 @@
     border-color: var(--accent);
     color: var(--accent-ink);
   }
-
-  /* ---------- Services list ---------- */
 
   .services { grid-area: services; }
 
@@ -243,8 +237,6 @@
     color: var(--text);
     white-space: nowrap;
   }
-
-  /* ---------- Summary panel ---------- */
 
   .summary {
     grid-area: summary;
@@ -363,230 +355,8 @@
 </footer>
 
 <script>
-  // ---------- Catálogo (datos de ejemplo — reemplazar con el catálogo real) ----------
   const IVA = 0.15;
   const RECARGO_DATAFAST = 0.08;
 
   const MULTIPLIER = { liviano: 1.0, camioneta: 1.2, '4x4': 1.4 };
-  const VEHICLE_LABEL = { liviano: 'Liviano', camioneta: 'Camioneta', '4x4': '4x4' };
-
-  const SERVICIOS = [
-    { id: 1,  categoria: 'Frenos',                nombre: 'Cambio de pastillas delanteras',   mano_obra: 15,  repuesto: 35, tiempo: 1 },
-    { id: 2,  categoria: 'Frenos',                nombre: 'Cambio de discos de freno',        mano_obra: 5,   repuesto: 0,  tiempo: 0.5, unidad: 'lado', cantidad_default: 2, cantidad_max: 4, nota: 'Amparado en el ABC de Frenos' },
-    { id: 3,  categoria: 'Frenos',                nombre: 'Purga de sistema de frenos',       mano_obra: 12,  repuesto: 8,  tiempo: 0.5 },
-    { id: 17, categoria: 'Frenos',                nombre: 'Cilindro de freno (rueda)',        mano_obra: 25,  repuesto: 0,  tiempo: 0.5, unidad: 'rueda', cantidad_default: 1, cantidad_max: 4 },
-    { id: 18, categoria: 'Frenos',                nombre: 'Cilindro principal / auxiliar de freno', mano_obra: 40, repuesto: 0, tiempo: 1 },
-    { id: 19, categoria: 'Frenos',                nombre: 'Cambio de zapatas',                mano_obra: 20,  repuesto: 0,  tiempo: 0.7, unidad: 'lado', cantidad_default: 2, cantidad_max: 2 },
-    { id: 20, categoria: 'Frenos',                nombre: 'Reparación de mordaza',            mano_obra: 30,  repuesto: 0,  tiempo: 1, unidad: 'mordaza', cantidad_default: 1, cantidad_max: 4 },
-    { id: 21, categoria: 'Frenos',                nombre: 'Cable de freno de mano',           mano_obra: 15,  repuesto: 0,  tiempo: 0.5 },
-    { id: 22, categoria: 'Frenos',                nombre: 'Regulación de freno de mano',      mano_obra: 20,  repuesto: 0,  tiempo: 0.3 },
-    { id: 4,  categoria: 'Embrague',              nombre: 'Cambio de kit de embrague',        mano_obra: 80,  repuesto: 150, tiempo: 4 },
-    { id: 5,  categoria: 'Embrague',              nombre: 'Ajuste de embrague',                mano_obra: 20,  repuesto: 0,  tiempo: 1 },
-    { id: 23, categoria: 'Embrague',              nombre: 'Cable de embrague',                mano_obra: 25,  repuesto: 0,  tiempo: 0.7 },
-    { id: 6,  categoria: 'Motor',                 nombre: 'Cambio de aceite y filtro',         mano_obra: 10,  repuesto: 30, tiempo: 0.5 },
-    { id: 7,  categoria: 'Motor',                 nombre: 'Cambio de banda de distribución',   mano_obra: 180, repuesto: 0,  tiempo: 5 },
-    { id: 8,  categoria: 'Motor',                 nombre: 'Afinamiento de motor',               mano_obra: 35,  repuesto: 45, tiempo: 2 },
-    { id: 13, categoria: 'Motor',                 nombre: 'Cambio de bujías (juego)',          mano_obra: 0,   repuesto: 45, tiempo: 1 },
-    { id: 14, categoria: 'Motor',                 nombre: 'Limpieza de inyectores',            mano_obra: 0,   repuesto: 45, tiempo: 1 },
-    { id: 24, categoria: 'Motor',                 nombre: 'Filtro de bomba de combustible',    mano_obra: 40,  repuesto: 0,  tiempo: 1 },
-    { id: 25, categoria: 'Motor',                 nombre: 'Batería de bomba de combustible',   mano_obra: 40,  repuesto: 0,  tiempo: 1 },
-    { id: 26, categoria: 'Motor',                 nombre: 'Empaque de tapa válvulas',          mano_obra: 30,  repuesto: 0,  tiempo: 1.5 },
-    { id: 27, categoria: 'Motor',                 nombre: 'Cambio de termostato',              mano_obra: 15,  repuesto: 0,  tiempo: 1 },
-    { id: 28, categoria: 'Motor',                 nombre: 'Sensor de oxígeno',                 mano_obra: 20,  repuesto: 0,  tiempo: 0.5 },
-    { id: 29, categoria: 'Motor',                 nombre: 'Sensor de cigüeñal',                mano_obra: 30,  repuesto: 0,  tiempo: 1 },
-    { id: 30, categoria: 'Motor',                 nombre: 'Banda de alternador',               mano_obra: 20,  repuesto: 0,  tiempo: 0.7 },
-    { id: 31, categoria: 'Motor',                 nombre: 'Banda de accesorios',                mano_obra: 90,  repuesto: 0,  tiempo: 2 },
-    { id: 32, categoria: 'Motor',                 nombre: 'Reprogramación de cuerpo de aceleración (escáner)', mano_obra: 40, repuesto: 0, tiempo: 0.5 },
-    { id: 9,  categoria: 'Suspensión',            nombre: 'Cambio de amortiguadores (par)',    mano_obra: 40,  repuesto: 140, tiempo: 2 },
-    { id: 10, categoria: 'Suspensión',            nombre: 'Cambio de rótulas',                 mano_obra: 25,  repuesto: 60, tiempo: 1.5 },
-    { id: 34, categoria: 'Suspensión',            nombre: 'Terminales',                        mano_obra: 15,  repuesto: 0,  tiempo: 0.5 },
-    { id: 35, categoria: 'Suspensión',            nombre: 'Articulaciones',                    mano_obra: 15,  repuesto: 0,  tiempo: 0.5 },
-    { id: 36, categoria: 'Suspensión',            nombre: 'Platos de suspensión',               mano_obra: 15,  repuesto: 0,  tiempo: 0.7, unidad: 'plato', cantidad_default: 2, cantidad_max: 4 },
-    { id: 37, categoria: 'Suspensión',            nombre: 'Topes de amortiguadores posteriores', mano_obra: 5,  repuesto: 0,  tiempo: 0.3, unidad: 'lado', cantidad_default: 2, cantidad_max: 2 },
-    { id: 40, categoria: 'Suspensión',            nombre: 'Reparación de cremallera',           mano_obra: 250, repuesto: 0,  tiempo: 3 },
-    { id: 41, categoria: 'Suspensión',            nombre: 'Instalación de cremallera',          mano_obra: 120, repuesto: 0,  tiempo: 2 },
-    { id: 15, categoria: 'Alineación y Balanceo', nombre: 'Alineación 3D',                     mano_obra: 15,  repuesto: 0,  tiempo: 0.5 },
-    { id: 33, categoria: 'Alineación y Balanceo', nombre: 'Porto para camber y caster',        mano_obra: 50,  repuesto: 0,  tiempo: 1, unidad: 'lado', cantidad_default: 2, cantidad_max: 2 },
-    { id: 16, categoria: 'Alineación y Balanceo', nombre: 'Balanceo computarizado',            mano_obra: 15,  repuesto: 0,  tiempo: 0.3, unidad: 'rueda', cantidad_default: 4, cantidad_max: 4 },
-    { id: 11, categoria: 'Eléctrico',             nombre: 'Cambio de batería',                 mano_obra: 10,  repuesto: 0,  tiempo: 0.3 },
-    { id: 12, categoria: 'Eléctrico',             nombre: 'Diagnóstico eléctrico',              mano_obra: 20,  repuesto: 0,  tiempo: 1 },
-    { id: 38, categoria: 'Eléctrico',             nombre: 'Sensor TPMS',                       mano_obra: 20,  repuesto: 0,  tiempo: 0.5 },
-    { id: 39, categoria: 'Eléctrico',             nombre: 'Escaneo computarizado (Scanner)',   mano_obra: 20,  repuesto: 0,  tiempo: 0.5 },
-  ];
-
-  // ---------- Estado ----------
-  let vehiculo = 'liviano';
-  const seleccionados = new Map(); // id -> cantidad
-
-  // ---------- Utilidades ----------
-  function money(n) {
-    return '$' + n.toLocaleString('es-EC', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-  }
-
-  function precioUnitario(s) {
-    const mult = MULTIPLIER[vehiculo];
-    return (s.mano_obra + s.repuesto) * mult;
-  }
-
-  function precioServicio(s) {
-    const cantidad = seleccionados.get(s.id) || (s.unidad ? s.cantidad_default : 1);
-    return precioUnitario(s) * cantidad;
-  }
-
-  // ---------- Render de servicios ----------
-  function renderServicios() {
-    const cont = document.getElementById('services');
-    cont.innerHTML = '';
-
-    const categorias = [...new Set(SERVICIOS.map(s => s.categoria))];
-
-    categorias.forEach(cat => {
-      const block = document.createElement('div');
-      block.className = 'category';
-
-      const h2 = document.createElement('h2');
-      h2.textContent = cat;
-      block.appendChild(h2);
-
-      SERVICIOS.filter(s => s.categoria === cat).forEach(s => {
-        const checked = seleccionados.has(s.id);
-        const row = document.createElement('div');
-        row.className = 'service-row' + (checked ? ' checked' : '');
-
-        const cb = document.createElement('input');
-        cb.type = 'checkbox';
-        cb.checked = checked;
-        cb.disabled = !!s.precio_pendiente;
-        cb.addEventListener('change', () => {
-          if (cb.checked) seleccionados.set(s.id, s.unidad ? s.cantidad_default : 1);
-          else seleccionados.delete(s.id);
-          renderServicios();
-          renderResumen();
-        });
-
-        const cbLabel = document.createElement('label');
-        cbLabel.style.display = 'contents';
-        cbLabel.appendChild(cb);
-
-        const info = document.createElement('div');
-        info.className = 'info';
-        const name = document.createElement('div');
-        name.className = 'name';
-        name.textContent = s.nombre;
-        const meta = document.createElement('div');
-        meta.className = 'meta';
-        let metaText = 'Tiempo estimado: ' + s.tiempo + ' h';
-        if (s.unidad) metaText += ' · ' + money(precioUnitario(s)) + ' por ' + s.unidad;
-        if (s.nota) metaText += ' · ' + s.nota;
-        if (s.precio_pendiente) metaText = 'Precio por confirmar';
-        meta.textContent = metaText;
-        info.appendChild(name);
-        info.appendChild(meta);
-
-        row.appendChild(cbLabel);
-        row.appendChild(info);
-
-        if (s.unidad && checked) {
-          const cantidad = seleccionados.get(s.id);
-          const stepper = document.createElement('div');
-          stepper.className = 'stepper';
-
-          const minus = document.createElement('button');
-          minus.type = 'button';
-          minus.textContent = '−';
-          minus.addEventListener('click', (e) => {
-            e.preventDefault();
-            const nueva = Math.max(1, seleccionados.get(s.id) - 1);
-            seleccionados.set(s.id, nueva);
-            renderServicios();
-            renderResumen();
-          });
-
-          const qty = document.createElement('span');
-          qty.className = 'qty';
-          qty.textContent = cantidad;
-
-          const plus = document.createElement('button');
-          plus.type = 'button';
-          plus.textContent = '+';
-          plus.addEventListener('click', (e) => {
-            e.preventDefault();
-            const nueva = Math.min(s.cantidad_max, seleccionados.get(s.id) + 1);
-            seleccionados.set(s.id, nueva);
-            renderServicios();
-            renderResumen();
-          });
-
-          stepper.appendChild(minus);
-          stepper.appendChild(qty);
-          stepper.appendChild(plus);
-          row.appendChild(stepper);
-        }
-
-        const price = document.createElement('div');
-        price.className = 'price';
-        price.textContent = s.precio_pendiente ? '—' : money(precioServicio(s));
-
-        row.appendChild(price);
-        block.appendChild(row);
-      });
-
-      cont.appendChild(block);
-    });
-  }
-
-  // ---------- Render de resumen ----------
-  function renderResumen() {
-    const countLabel = document.getElementById('countLabel');
-    const block = document.getElementById('totalsBlock');
-
-    countLabel.textContent = seleccionados.size + (seleccionados.size === 1 ? ' servicio seleccionado' : ' servicios seleccionados') + ' · ' + VEHICLE_LABEL[vehiculo];
-
-    if (seleccionados.size === 0) {
-      block.innerHTML = '<div class="empty-note">Selecciona al menos un servicio para ver el total.</div>';
-      return;
-    }
-
-    const subtotal = SERVICIOS
-      .filter(s => seleccionados.has(s.id))
-      .reduce((acc, s) => acc + precioServicio(s), 0);
-
-    const conIva = subtotal * (1 + IVA);
-    const tarjeta = conIva * (1 + RECARGO_DATAFAST);
-
-    block.innerHTML = `
-      <div class="total-card efectivo">
-        <div class="t-label">Efectivo / Transferencia</div>
-        <div class="t-value">${money(subtotal)}</div>
-        <div class="t-note">Total neto, sin IVA</div>
-      </div>
-      <div class="total-card iva">
-        <div class="t-label">Con factura (IVA 15%)</div>
-        <div class="t-value">${money(conIva)}</div>
-        <div class="t-note">Subtotal + IVA</div>
-      </div>
-      <div class="total-card tarjeta">
-        <div class="t-label">Tarjeta de crédito</div>
-        <div class="t-value">${money(tarjeta)}</div>
-        <div class="t-note">Subtotal + IVA + recargo Datafast 8%</div>
-      </div>
-    `;
-  }
-
-  // ---------- Selector de vehículo ----------
-  document.getElementById('vehicleSeg').addEventListener('click', (e) => {
-    const btn = e.target.closest('button');
-    if (!btn) return;
-    vehiculo = btn.dataset.v;
-    document.querySelectorAll('#vehicleSeg button').forEach(b => b.classList.toggle('active', b === btn));
-    renderServicios();
-    renderResumen();
-  });
-
-  // ---------- Init ----------
-  renderServicios();
-  renderResumen();
-</script>
-
-</body>
-</html>
+  const VEHICLE_LABEL = { liviano: 'Liviano',
